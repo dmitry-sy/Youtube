@@ -22,6 +22,7 @@ class Youtube
         'playlistItems.list' => 'https://www.googleapis.com/youtube/v3/playlistItems',
         'activities' => 'https://www.googleapis.com/youtube/v3/activities',
         'commentThreads.list' => 'https://www.googleapis.com/youtube/v3/commentThreads',
+        'comment.list' => 'https://www.googleapis.com/youtube/v3/comments',
     ];
 
     /**
@@ -86,28 +87,30 @@ class Youtube
      * @param string $videoId       Instructs the API to return comment threads containing comments about the specified channel. (The response will not include comments left on videos that the channel uploaded.)
      * @param integer $maxResults   Specifies the maximum number of items that should be returned in the result set. Acceptable values are 1 to 100, inclusive. The default value is 20.
      * @param string $order         Specifies the order in which the API response should list comment threads. Valid values are: time, relevance.
+     * @param array $partToken      Specifies a preivous Page Token
      * @param array $part           Specifies a list of one or more commentThread resource properties that the API response will include.
      * @param bool $pageInfo        Add page info to returned array.
      * @return array
      * @throws \Exception
      */
-    public function getCommentThreadsByVideoId($videoId = null, $maxResults = 20, $order = null, $part = ['id', 'replies', 'snippet'], $pageInfo = false) {
+    public function getCommentThreadsByVideoId($videoId = null, $maxResults = 20, $order = null, $pageToken= '', $part = ['id', 'replies', 'snippet'], $pageInfo = false) {
 
-        return $this->getCommentThreads(null, null, $videoId, $maxResults, $order, $part, $pageInfo);
+        return $this->getCommentThreads(null, null, $videoId, $maxResults, $order, $pageToken, $part, $pageInfo);
     }
 
     /**
-     * @param string $channelId     Instructs the API to return comment threads containing comments about the specified channel. (The response will not include comments left on videos that the channel uploaded.)
-     * @param string $id            Specifies a comma-separated list of comment thread IDs for the resources that should be retrieved.
-     * @param string $videoId       Instructs the API to return comment threads containing comments about the specified channel. (The response will not include comments left on videos that the channel uploaded.)
-     * @param integer $maxResults   Specifies the maximum number of items that should be returned in the result set. Acceptable values are 1 to 100, inclusive. The default value is 20.
-     * @param string $order         Specifies the order in which the API response should list comment threads. Valid values are: time, relevance.
-     * @param array $part           Specifies a list of one or more commentThread resource properties that the API response will include.
-     * @param bool $pageInfo        Add page info to returned array.
+     * @param string $channelId Instructs the API to return comment threads containing comments about the specified channel. (The response will not include comments left on videos that the channel uploaded.)
+     * @param string $id Specifies a comma-separated list of comment thread IDs for the resources that should be retrieved.
+     * @param string $videoId Instructs the API to return comment threads containing comments about the specified channel. (The response will not include comments left on videos that the channel uploaded.)
+     * @param integer $maxResults Specifies the maximum number of items that should be returned in the result set. Acceptable values are 1 to 100, inclusive. The default value is 20.
+     * @param string $order Specifies the order in which the API response should list comment threads. Valid values are: time, relevance.
+     * @param string $pageToken Specifies a preivous Page Token
+     * @param array $part Specifies a list of one or more commentThread resource properties that the API response will include.
+     * @param bool $pageInfo Add page info to returned array.
      * @return array
      * @throws \Exception
      */
-    public function getCommentThreads($channelId = null, $id = null, $videoId = null, $maxResults = 20, $order = null, $part = ['id', 'replies', 'snippet'], $pageInfo = false)
+    public function getCommentThreads($channelId = null, $id = null, $videoId = null, $maxResults = 20, $order = null, $pageToken= '', $part = ['id', 'replies', 'snippet'], $pageInfo = false)
     {
         $API_URL = $this->getApi('commentThreads.list');
 
@@ -118,6 +121,7 @@ class Youtube
             'maxResults' => $maxResults,
             'part' => implode(', ', $part),
             'order' => $order,
+            'pageToken' => $pageToken,
         ]);
 
         $apiData = $this->api_get($API_URL, $params);
