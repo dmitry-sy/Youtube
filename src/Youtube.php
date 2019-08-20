@@ -692,12 +692,16 @@ class Youtube
         } else {
             $this->page_info = [
                 'resultsPerPage' => $resObj->pageInfo->resultsPerPage,
-                'totalResults' => $resObj->pageInfo->totalResults,
+//                'totalResults' => $resObj->pageInfo->totalResults,
                 'kind' => $resObj->kind,
                 'etag' => $resObj->etag,
                 'prevPageToken' => null,
                 'nextPageToken' => null,
             ];
+            if (method_exists( $resObj->pageInfo , 'totalResults' ))
+            {
+                $this->page_info['totalResults'] = $resObj->pageInfo->totalResults;
+            }
 
             if (isset($resObj->prevPageToken)) {
                 $this->page_info['prevPageToken'] = $resObj->prevPageToken;
